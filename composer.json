@@ -1,14 +1,14 @@
 {
     "name": "igorgoroun/ftns",
     "description": "Server-side package for FTNW point system",
-    "type": "ftns-project",
+    "license": "GPL-2.0",
+    "type": "project",
     "authors": [
         {
             "name": "Igor Goroun",
             "email": "igor.goroun@gmail.com"
         }
     ],
-    "minimum-stability": "dev",
     "require": {
         "php": "^5.5|^7.0",
         "symfony/console": "^3.1",
