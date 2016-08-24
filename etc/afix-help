@@ -1,0 +1,8 @@
+
+%HELP - This message
+
+%LIST - List of areas available for subscription
+
++AREANAME - Subscribe echoarea
+-AREANAME - Unsubscribe echoarea
+
