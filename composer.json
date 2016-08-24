@@ -1,7 +1,7 @@
 {
-    "name": "ftns",
+    "name": "igorgoroun/ftns",
     "description": "Server-side package for FTNW point system",
-    "type": "project",
+    "type": "ftns-project",
     "authors": [
         {
             "name": "Igor Goroun",
