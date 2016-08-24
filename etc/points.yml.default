@@ -1,0 +1,5 @@
+# This file creates automatically
+# Example structure: (0 - means webpoint, 1 - classic point)
+#points:
+#    p1.f4.n466.z2.fidonet.org: 0
+#    p2.f4.n466.z2.fidonet.org: 1

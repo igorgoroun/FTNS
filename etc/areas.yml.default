@@ -1,0 +1,5 @@
+# This file updates automatically when you copy it to areas.yml
+# Example structure:
+#areas:
+#    snake.local: { uplink: f4.n466.z2.fidonet.org, subscribers: { f50.n466.z2.fidonet.org: 1, p1.f4.n466.z2.fidonet.org: 0, p2.f4.n466.z2.fidonet.org: 1 } }
+#    nikolaev.test: { uplink: f50.n466.z2.fidonet.org, subscribers: { p1.f4.n466.z2.fidonet.org: 0 } }

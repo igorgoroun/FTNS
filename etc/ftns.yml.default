@@ -1,0 +1,50 @@
+# FTNS config file
+
+# ME
+node: "2:466/4"
+node_rfc: "f4.n466.z2.fidonet.org"
+node_short: "f4.n466"
+
+origin: "FTNS at 2:466/4@fidonet"
+tearline: "ftns 0.1-dev"
+
+uplink:
+  f50.n466.z2.fidonet.org: "UPLINK_PASSWORD"
+
+route:
+  default: f50.n466.z2.fidonet.org
+
+# Path to log-file
+log_file: /var/log/ifmail/ftns.log
+
+# Path to spool echomail messages
+echomail_spool: /var/spool/ftn/echospool/
+
+# Path to spool echomail messages
+netmail_spool: /var/spool/ftn/netmailspool/
+
+# Binkd links file
+binkd_points_file: /etc/binkd/points.inc
+
+# Ifmail binary path
+ifmail: /usr/lib/ifmail/ifmail
+
+# FTNW connect type
+# type: local/remote
+ftnw:
+  type: local
+  mysql_host: localhost
+  mysql_db: DB_NAME
+  mysql_user: DB_USER
+  mysql_pass: DB_PASSWD
+
+# Path to areas yml-file
+areas_file: "/var/www/fidonews-server/etc/areas.yml"
+
+# POINT config
+points_file: "/var/www/fidonews-server/etc/points.yml"
+# Areas to autosubscribe points to
+point_autosubscribe: ["snake.local"]
+
+areafix_help_file: "/var/www/fidonews-server/etc/afix-help"
+
