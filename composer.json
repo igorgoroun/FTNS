@@ -23,6 +23,21 @@
             "": "src/"
         }
     },
+    "scripts": {
+        "post-install-cmd": [
+            "chmod a+x ftns ftns-toss",
+            "mv ftns ../../../",
+            "cp etc/ftns.yml.default etc/ftns.yml",
+            "cp etc/areas.yml.default etc/areas.yml",
+            "cp etc/points.yml.default etc/points.yml",
+            "mv ftns-toss ../../../",
+            "mv etc ../../../"
+        ],
+        "post-update-cmd": [
+            "chmod a+x ftns",
+            "mv --force ftns ../../../"
+        ]
+    },
     "extra": {
         "branch-alias": {
             "dev-master": "0.2.x-dev"

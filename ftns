@@ -5,13 +5,13 @@
 set_time_limit(0);
 
 /* Optional. It’s better to do it in the php.ini file */
-//date_default_timezone_set('Europe/Kiev'); 
+//date_default_timezone_set('Europe/Kiev');
 
 // include the composer autoloader
-require_once __DIR__ . '/vendor/autoload.php'; 
+require_once __DIR__ . '/vendor/autoload.php';
 
-// import the Symfony Console Application 
-use Symfony\Component\Console\Application; 
+// import the Symfony Console Application
+use Symfony\Component\Console\Application;
 use Entity\Config;
 use Psr\Log\LogLevel;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -39,3 +39,4 @@ $app->add(new \Commands\EchoSubCommand(null,$config,$logger));
 $app->run();
 
 ?>
+

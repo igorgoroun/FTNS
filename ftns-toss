@@ -1,0 +1,28 @@
+#!/bin/bash
+
+NM_DIR="/var/spool/ftn/netmailspool/"
+EM_DIR="/var/spool/ftn/echospool/"
+FTNS_PATH="/var/www/fidonews-server/ftns"
+
+NM_SPOOLED=$(find $NM_DIR -mmin +1 -type f -path *.msg | wc -l)
+#echo $NM_SPOOLED
+
+EM_SPOOLED=$(find $EM_DIR -mmin +1 -type f -path *.msg | wc -l)
+#echo $EM_SPOOLED
+
+if [ $NM_SPOOLED -gt 0 ]
+then
+    echo "Netmail to toss: "$NM_SPOOLED;
+    /usr/bin/php ${FTNS_PATH} netmail:toss
+else
+    echo "No netmail";
+fi
+
+
+if [ $EM_SPOOLED -gt 0 ]
+then
+    echo "Echomail to toss: "$EM_SPOOLED
+    /usr/bin/php ${FTNS_PATH} echomail:toss
+else
+    echo "No echomail";
+fi
