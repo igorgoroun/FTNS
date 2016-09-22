@@ -29,7 +29,7 @@ class EchoNewCommand extends Command
     {
         $this
             ->setName('echomail:newarea')
-            ->setDescription('Add new area to config')
+            ->setDescription('Subscribe new area and configure it')
             ->addArgument('uplink', InputArgument::REQUIRED, "RFC-style uplink address")
             ->addArgument('echo', InputArgument::IS_ARRAY | InputArgument::REQUIRED, "List of EchoAreas (space separated)")
             ->addOption('nosubscribe','s', InputOption::VALUE_NONE, "Do not send subscribe message to uplink areafix")

@@ -28,7 +28,7 @@ class SyncPointsCommand extends Command
     {
         $this
             ->setName('sync:points')
-            ->setDescription('Check points were registered in ftnw')
+            ->setDescription('FTNW: Sync points registered in ftnw')
         ;
     }
 

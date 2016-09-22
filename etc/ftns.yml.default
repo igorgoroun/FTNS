@@ -1,17 +1,18 @@
 # FTNS config file
 
 # ME
-node: "2:466/4"
-node_rfc: "f4.n466.z2.fidonet.org"
-node_short: "f4.n466"
+node: 2:466/4
+node_rfc: f4.n466.z2.fidonet.org
+node_sysop: Igor Goroun
 
-origin: "FTNS at 2:466/4@fidonet"
-tearline: "ftns 0.1-dev"
+origin: "Snake's lair at 2:466/4@fidonet"
+tearline: "ftns/ftnw by Igor Goroun"
 
 uplink:
-  f50.n466.z2.fidonet.org: "UPLINK_PASSWORD"
+  f50.n466.z2.fidonet.org: "_PASSWORD_"
 
 route:
+  sysop: [p1.f4.n466.z2.fidonet.org,p2.f4.n466.z2.fidonet.org]
   default: f50.n466.z2.fidonet.org
 
 # Path to log-file
@@ -20,31 +21,40 @@ log_file: /var/log/ifmail/ftns.log
 # Path to spool echomail messages
 echomail_spool: /var/spool/ftn/echospool/
 
-# Path to spool echomail messages
+# Path to spool netmail messages
 netmail_spool: /var/spool/ftn/netmailspool/
+
+# Path to create action flags
+actions_spool: /var/spool/ftn/
 
 # Binkd links file
 binkd_points_file: /etc/binkd/points.inc
 
 # Ifmail binary path
-ifmail: /usr/lib/ifmail/ifmail
+#ifmail: /usr/lib/ifmail/ifmail
+ifmail: /opt/ifmail-3.03/ifgate/ifmail
 
 # FTNW connect type
-# type: local/remote
+# type: local/remote - not implemented
 ftnw:
   type: local
   mysql_host: localhost
-  mysql_db: DB_NAME
-  mysql_user: DB_USER
-  mysql_pass: DB_PASSWD
+  mysql_db: fidonews
+  mysql_user: snake
+  mysql_pass: dreams
+#  remote_api_url: "https://fido.snake.mk.ua/api"
+#  remote_api_node: "2:466/4"
+#  remote_api_pass: dreams
 
 # Path to areas yml-file
 areas_file: "/var/www/fidonews-server/etc/areas.yml"
 
 # POINT config
 points_file: "/var/www/fidonews-server/etc/points.yml"
+
 # Areas to autosubscribe points to
 point_autosubscribe: ["snake.local"]
 
 areafix_help_file: "/var/www/fidonews-server/etc/afix-help"
+areafix_robot_names: ["areafix","area-fix"]
 

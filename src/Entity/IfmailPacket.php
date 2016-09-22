@@ -11,32 +11,49 @@ namespace Entity;
 
 class IfmailPacket
 {
+    private $ngroup = false;
     private $from=false;
     private $to=false;
-    private $subject=false;
+    private $xto=false;
     private $date=false;
-    private $origin=false;
-    private $tearline=false;
+    private $subject=false;
+    private $msgid_rfc = false;
+    private $r_mime = "1.0";
+    private $r_ctype = "text/plain; charset=x-cp866";
+    private $r_tenc = "8bit";
+    private $msgid = false;
+    private $area = false;
     private $tz=false;
     private $charset="CP866";
-    private $pid = "ftns";
-    private $tid = "ftns";
-    private $via = 'ftns';
+    private $origin=false;
+    private $tearline=false;
+    private $pid = false;
+    private $tid = false;
+    private $via = false;
+
 
     private $body;
 
     private $headers_list = array(
         'from'=>'From',
+        'ngroup'=>'Newsgroups',
         'to'=>'To',
-        'subject'=>'Subject',
-        'tz'=>'X-FTN-TZUTC',
+        'xto'=>'X-Comment-To',
         'date'=>'Date',
+        'subject'=>'Subject',
+        'msgid'=>'X-FTN-MSGID',
+        'msgid_rfc'=>'Message-ID',
+        'area'=>'X-FTN-AREA',
+        'tz'=>'X-FTN-TZUTC',
         'origin'=>'X-FTN-Origin',
         'tearline'=>'X-FTN-Tearline',
         'charset'=>'X-FTN-CHRS',
         'pid'=>'X-FTN-PID',
         'tid'=>'X-FTN-TID',
         'via'=>'X-FTN-Via',
+        'r_mime'=>'Mime-Version',
+        'r_ctype'=>'Content-Type',
+        'r_tenc'=>'Content-Transfer-Encoding',
     );
     private $headers = array();
 
@@ -45,7 +62,7 @@ class IfmailPacket
         $this->date = $sd->format('r');
         $this->tz = $sd->format('O');
         if ($config->version) {
-            $this->tid = $config->tearline;
+            $this->tid = $config->version;
             $this->via = $config->version;
         }
     }
@@ -55,7 +72,7 @@ class IfmailPacket
     }
 
     public function createHeaders() {
-        if ($this->from && $this->to && $this->subject) {
+        if ($this->from && $this->subject) {
             foreach ($this as $hdr => $value) {
                 if (!in_array($hdr,['body','headers','headers_list']) && $this->$hdr) {
                     $this->addHeader($this->headers_list[$hdr].": ".$this->$hdr);
@@ -94,7 +111,10 @@ class IfmailPacket
         if (!$from_name) {
             $this->from = $from_rfc;
         } else {
-            $this->from = "\"".$from_name."\" <".$this->parseFromName($from_name)."@".$from_rfc.">";
+            $msgid_hash = substr(md5(time()),0,8);
+            $this->msgid = Message::makeFTN($from_rfc)." ".$msgid_hash;
+            $this->msgid_rfc = "<".$msgid_hash."@".$from_rfc.">";
+            $this->from = $from_name." <".$this->parseFromName($from_name)."@".$from_rfc.">";
         }
     }
 
@@ -115,6 +135,15 @@ class IfmailPacket
         } else {
             $this->to = "\"".$to_name."\" <".$this->parseFromName($to_name)."@".$to_rfc.">";
         }
+    }
+
+    public function setXTo($to_name) {
+        $this->xto = $to_name;
+    }
+
+    public function setArea($area_name) {
+        $this->area = mb_strtoupper($area_name);
+        $this->ngroup = mb_strtolower($area_name);
     }
 
     /**

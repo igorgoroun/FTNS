@@ -15,13 +15,15 @@ class Config
 {
     public $echomail_spool;
     public $netmail_spool;
+    public $actions_spool;
     public $node;
     public $node_rfc;
+    public $node_sysop;
     public $node_short;
     public $origin;
     public $tearline;
     public $log_file;
-    public $ftnw;
+    public $ftnw=false;
     public $uplink;
     public $route;
     public $ifmail;
@@ -32,6 +34,7 @@ class Config
     public $points;
     public $point_autosubscribe;
     public $areafix_help_file;
+    public $areafix_robot_names;
     public $version;
 
     public function __construct($yaml_file)

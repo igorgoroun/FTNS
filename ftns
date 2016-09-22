@@ -5,7 +5,7 @@
 set_time_limit(0);
 
 /* Optional. It’s better to do it in the php.ini file */
-date_default_timezone_set('Europe/Kiev'); 
+//date_default_timezone_set('Europe/Kiev'); 
 
 // include the composer autoloader
 require_once __DIR__ . '/vendor/autoload.php'; 
@@ -17,12 +17,11 @@ use Psr\Log\LogLevel;
 use Symfony\Component\Console\Output\OutputInterface;
 
 $config = new Config(__DIR__.'/etc/ftns.yml');
-$config->version = "ftns 0.1-dev by Igor Goroun";
+$config->version = "ftns-0.1.x-dev";
+$config->starttime = microtime(true);
 $log_stream = new \Symfony\Component\Console\Output\StreamOutput(fopen($config->log_file,'a+',false));
 $logger = new \Symfony\Component\Console\Logger\ConsoleLogger($log_stream,array(LogLevel::INFO=>OutputInterface::VERBOSITY_NORMAL));
 //$logger->info("@{time} Run",['time'=>date('Y-m-d-H:i:s')]);
-
-//print_r($config);
 
 $app = new Application();
 $app->add(new \Commands\MailrawCommand(null,$config,$logger));
@@ -32,8 +31,10 @@ $app->add(new \Commands\EchotossCommand(null,$config,$logger));
 $app->add(new \Commands\EchoscanCommand(null,$config,$logger));
 $app->add(new \Commands\EchorawCommand(null,$config,$logger));
 $app->add(new \Commands\EchoNewCommand(null,$config,$logger));
+$app->add(new \Commands\EchoPostCommand(null,$config,$logger));
 $app->add(new \Commands\SyncPointsCommand(null,$config,$logger));
 $app->add(new \Commands\SyncAreasCommand(null,$config,$logger));
+$app->add(new \Commands\SyncSubscrCommand(null,$config,$logger));
 $app->add(new \Commands\EchoSubCommand(null,$config,$logger));
 $app->run();
 

@@ -27,13 +27,13 @@ class SyncAreasCommand extends Command
     {
         $this
             ->setName('sync:areas')
-            ->setDescription('Sync areas and points subscriptions')
+            ->setDescription('FTNW: Sync areas with ftnw database')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->logger->info("@{time} Syncing areas with database",['time'=>date('Y-m-d H:i:s')]);
+        $this->logger->info("{time} Syncing areas with database",['time'=>date('r')]);
         // query
         $sql = "SELECT id,name FROM echoarea";
         $stmt = $this->db->prepare($sql);
@@ -58,19 +58,6 @@ class SyncAreasCommand extends Command
                 $stmt->execute();
             }
         }
-        // Update subscriptions for points
-        /*
-        $sql = "SELECT s.id,p.ifaddr as point,e.name as area
-                FROM subscription s
-                LEFT JOIN point p ON (p.id=s.point_id)
-                LEFT JOIN echoarea e ON (e.id=s.area_id)
-        ";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute();
-        $db_subs = array();
-        foreach($stmt->fetchAll() as $data) {
-            print_r($data);
-        }*/
     }
 
 }

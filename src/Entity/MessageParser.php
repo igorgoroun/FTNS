@@ -21,10 +21,11 @@ class MessageParser
     {
         // Returned object
         $this->message = new Message();
-        // Save source message
-        $this->message->srcFull = $message_packet;
+        // Save source message, remove 'Received:'
+        $this->message->srcFull = preg_replace("/Received\: .+\n\t.+\n/",'',$message_packet);
+        //$this->message->srcFull = $message_packet;
         // Split headers/body
-        $this->splitMessage($message_packet);
+        $this->splitMessage($this->message->srcFull);
         // Parse cutted headers
         $this->parseHeaders();
     }
@@ -32,12 +33,12 @@ class MessageParser
     private function splitMessage($message) {
         // Check charset
         if (preg_match("/X\-FTN\-CHRS\:\ (.+)/",$message,$chr_data)) {
-            $this->charset = explode(" ",trim($chr_data[1]),1)[0];
+            $this->charset = explode(" ",trim($chr_data[1]))[0];
         } else {
             $this->charset = 'CP866';
         }
 
-        // Check charset
+        // Check timezone
         if (preg_match("/X\-FTN\-TZUTC\:\ (.+)/",$message,$chr_data)) {
             $inptz = trim($chr_data[1]);
             // check plus/minus
@@ -59,73 +60,74 @@ class MessageParser
     private function parseHeaders() {
         $lines = explode("\n",$this->headers);
         foreach($lines as $line) {
-            preg_match("/^([a-zA-Z0-9\-\_.]+)\:\ (.+)$/",$line,$ldata);
-            $header = mb_strtolower(trim($ldata[1]));
-            $data = trim($ldata[2]);
-            switch ($header) {
-                case "path":
-                    $this->parseNoRoute($data);
-                    break;
-                case "newsgroups":
-                    $this->parseEchoareas($data);
-                    break;
-                case "x-ftn-chrs":
-                    $this->parseCharset($data);
-                    break;
-                case "x-comment-to":
-                    $this->parseToName($data);
-                    break;
-                case "x-ftn-reply":
-                    $this->parseToFTN($data);
-                    break;
-                case "from":
-                    $this->parseFromNameRFC($data);
-                    break;
-                case "to":
-                    $this->parseToRFC($data);
-                    break;
-                case "x-ftn-msgid":
-                    $this->parseFromFTN($data);
-                    break;
-                case "date":
-                    $this->parseDate($data);
-                    break;
-                case "x-origin-date":
-                    $this->parseDate($data);
-                    break;
-                case "subject":
-                    $this->parseSubject($data);
-                    break;
-                case "x-ftn-pid":
-                    $this->message->ftnPID = $data;
-                    break;
-                case "x-ftn-tid":
-                    $this->message->ftnTID = $data;
-                    break;
-                /*case "x-ftn-tzutc":
-                    $this->message->ftnTZ = $data;
-                    break;*/
-                case "x-ftn-tearline":
-                    $this->message->tearline = $data;
-                    break;
-                case "x-ftn-origin":
-                    $this->message->origin = $data;
-                    break;
-                case "x-ftn-avatar":
-                    $this->message->avatar = $data;
-                    break;
-                case "x-ftn-location":
-                    $this->message->location = $data;
-                    break;
-                case "x-ftn-kludge":
-                    $this->parseKludge($data);
-                    break;
-                case "x-ftn-via":
-                    $this->parseVia($data);
-                    break;
-                case "message-id":
-                    $this->message->messageid = $data;
-                    break;
+            if (preg_match("/^([a-zA-Z0-9\-\_.]+)\:\ (.+)$/",$line,$ldata)) {
+                $header = mb_strtolower(trim($ldata[1]));
+                $data = trim($ldata[2]);
+                switch ($header) {
+                    case "path":
+                        $this->parseNoRoute($data);
+                        break;
+                    case "newsgroups":
+                        $this->parseEchoareas($data);
+                        break;
+                    case "x-ftn-chrs":
+                        $this->parseCharset($data);
+                        break;
+                    case "x-comment-to":
+                        $this->parseToName($data);
+                        break;
+                    case "x-ftn-reply":
+                        $this->parseToFTN($data);
+                        break;
+                    case "from":
+                        $this->parseFromNameRFC($data);
+                        break;
+                    case "to":
+                        $this->parseToRFC($data);
+                        break;
+                    case "x-ftn-msgid":
+                        $this->parseFromFTN($data);
+                        break;
+                    case "date":
+                        $this->parseDate($data);
+                        break;
+                    case "x-origin-date":
+                        $this->parseDate($data);
+                        break;
+                    case "subject":
+                        $this->parseSubject($data);
+                        break;
+                    case "x-ftn-pid":
+                        $this->message->ftnPID = $data;
+                        break;
+                    case "x-ftn-tid":
+                        $this->message->ftnTID = $data;
+                        break;
+                    /*case "x-ftn-tzutc":
+                        $this->message->ftnTZ = $data;
+                        break;*/
+                    case "x-ftn-tearline":
+                        $this->message->tearline = $data;
+                        break;
+                    case "x-ftn-origin":
+                        $this->message->origin = $data;
+                        break;
+                    case "x-ftn-avatar":
+                        $this->message->avatar = $data;
+                        break;
+                    case "x-ftn-location":
+                        $this->message->location = $data;
+                        break;
+                    case "x-ftn-kludge":
+                        $this->parseKludge($data);
+                        break;
+                    case "x-ftn-via":
+                        $this->parseVia($data);
+                        break;
+                    case "message-id":
+                        $this->message->messageid = $data;
+                        break;
+                }
             }
         }
         $this->message->srcHeader = $this->headers;
@@ -175,7 +177,9 @@ class MessageParser
             $ddtz = $dd->createFromFormat("O",$this->tzutc)->getTimezone();
         } else $ddtz = NULL;
         $sd = new \DateTime($src_date[2]." ".$src_date[3]." ".$src_date[4]." ".$src_date[5],$ddtz);
-        $sd->setTimestamp($sd->getTimestamp()+3600);
+        if (($sd->getTimestamp()+3600)<=(new \DateTime())->getTimestamp()) {
+            $sd->setTimestamp($sd->getTimestamp() + 3600);
+        }
         $sd->setTimezone((new \DateTime())->getTimezone());
         $this->message->date = $sd->format('Y-m-d H:i:s');
         $this->message->ftnTZ = $sd->getTimezone()->getName();

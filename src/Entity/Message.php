@@ -64,7 +64,7 @@ class Message
         if (preg_match("/^p(\d{1,4})\.f(\d{1,4})\.n(\d{1,4})\.z(\d{1})\.(.+)/",$ad,$data)) {
             return $data[4].":".$data[3]."/".$data[2].".".$data[1];
         } elseif (preg_match("/^f(\d{1,4})\.n(\d{1,4})\.z(\d{1})\.(.+)/",$ad,$data)) {
-            return $data[4].":".$data[3]."/".$data[2];
+            return $data[3].":".$data[2]."/".$data[1];
         } else {
             return false;
         }

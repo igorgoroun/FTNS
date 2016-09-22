@@ -57,10 +57,10 @@ class EchoscanCommand extends Command
             if (!is_null($mess['h_to_rfc']) && !is_null($mess['reply_id'])) {
                 $packet->writeln("References: ".$mess['reply_id']);
             }
-            $packet->writeln("X-Newsreader: FTNW-0.1-dev");
+            $packet->writeln("X-Newsreader: ".iconv("UTF-8","CP866",$mess["pid"]));
             $packet->writeln("X-FTN-CHRS: CP866");
             $packet->writeln("Mime-Version: 1.0");
-            $packet->writeln("Content-Type: text/plain; charset=cp866");
+            $packet->writeln("Content-Type: text/plain; charset=x-cp866");
             $packet->writeln("Content-Transfer-Encoding: 8bit");
             $packet->writeln("X-FTN-AREA: ".mb_strtoupper($mess['area']));
             $packet->writeln("X-FTN-MSGID: ".$mess['h_from_ftn']." ".$mess['h_ftnmid']);
@@ -85,7 +85,7 @@ class EchoscanCommand extends Command
 
         // $this->ftnconfig->echomail_spool
 
-        $this->logger->info("@{time} spooled: {cnt}",['time'=>date('r'),'cnt'=>$spooled_count]);
+        $this->logger->info("{time} echomail spooled: {cnt}",['time'=>date('r'),'cnt'=>$spooled_count]);
 
     }
 }

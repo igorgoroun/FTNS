@@ -45,6 +45,8 @@ class EchotossCommand extends Command
         foreach($dbm->fetchAll() as $ad) {
             $db_areas[$ad['name']] = $ad['id'];
         }
+        $this->logger->notice("{time} echotoss got {cnt} areas from db",['time'=>date('r'),'cnt'=>count($db_areas)]);
+
         // get web-points list
         $sql = "SELECT id,ifaddr FROM point WHERE active=1 and classic=0";
         $dbm = $this->db->prepare($sql);
@@ -53,6 +55,7 @@ class EchotossCommand extends Command
         foreach($dbm->fetchAll() as $pn) {
             $web_points[$pn['ifaddr']] = $pn['id'];
         }
+        $this->logger->notice("{time} echotoss got {cnt} point from db",['time'=>date('r'),'cnt'=>count($web_points)]);
 
         $finder = new Finder();
         $finder->in($this->ftnconfig->echomail_spool)->name("*.msg")->date(" < now - 1 minute");
@@ -117,6 +120,7 @@ class EchotossCommand extends Command
                     //print_r($query->errorCode());
                     // get message id
                     $message_id = $this->db->lastInsertId();
+                    $this->logger->notice("{time} echotoss saved massage to db, id: {mid}, area: {are}",['time'=>date('r'),'mid'=>$message_id,'are'=>$area]);
                     //print $message_id;
 
                     // downlinks (points)
@@ -165,7 +169,7 @@ class EchotossCommand extends Command
             $parsed_count++;
 
         }
-        $this->logger->info("@{time} tossed: {cnt}",['time'=>date('r'),'cnt'=>$parsed_count]);
+        $this->logger->info("@{time} echomail tossed: {cnt} in {spent} s",['time'=>date('r'),'cnt'=>$parsed_count,'spent'=>microtime(true)-$this->ftnconfig->starttime]);
 
     }
 }

@@ -61,5 +61,6 @@ class EchorawCommand extends Command
             // Log usage error
             $this->logger->error("No stdin input found");
         }
+        $this->logger->info("@{time} spooling spent time: {spent} s",['time'=>date('r'),'spent'=>time()-$this->ftnconfig->starttime]);
     }
 }

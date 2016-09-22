@@ -3,15 +3,19 @@
 namespace Commands;
 
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Entity\Areafix;
 use Entity\Config;
 use Entity\IfmailPacket;
 use Entity\LocalDB;
 use Entity\MessageParser;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Logger\ConsoleLogger;
+use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
 
@@ -52,19 +56,70 @@ class MailtossCommand extends Command
                  */
                 if ($this->ftnconfig->points[$parsed->message->to_ifaddr] == 0) {
                     $this->saveToDB($parsed);
+                    $this->logger->info("{time} netmail for web-point {pnt}, saving to database",['time'=>date('r'),'pnt'=>$parsed->message->to_ifaddr]);
                 /*
                  * FOR CLASSIC POINT
                  */
                 } elseif ($this->ftnconfig->points[$parsed->message->to_ifaddr] == 1) {
                     $this->sentToIfmail($parsed,$parsed->message->to_ifaddr);
+                    $this->logger->info("{time} netmail for classic-point {pnt}, sending to ifmail",['time'=>date('r'),'pnt'=>$parsed->message->to_ifaddr]);
                 }
             /*
-             * LOCAL MESSAGE FOR SYSOP OR FOR ROBOTS
+             * LOCAL MESSAGE FOR SYSOP OR FOR AREAFIX
              */
             } elseif ($parsed->message->to_ifaddr == $this->ftnconfig->node_rfc) {
-                $this->logger->info("@{time} got netmail to my node",['time'=>date('r')]);
-                if (in_array(mb_strtolower($parsed->message->to_name),['areafix','area-fix','area fix'])) {
-                    $this->logger->info("@{time} got areafix request from {sender}",['time'=>date('r'),'sender'=>$parsed->message->from_ftn]);
+
+                $this->logger->info("{time} netmail to my node from {from}",['time'=>date('r'),'from'=>$parsed->message->from_rfc]);
+
+                // AREAFIX
+                if (in_array(mb_strtolower($parsed->message->to_name),$this->ftnconfig->areafix_robot_names)) {
+                    $this->logger->info("{time} areafix request from {sender}",['time'=>date('r'),'sender'=>$parsed->message->from_ftn]);
+                    $af = new Areafix($this->ftnconfig,$this->logger);
+                    $af->processMessage($parsed->message);
+                    $replies = $af->getReplies();
+                    if (count($replies)>0) {
+                        $body = "Areafix -> ".$parsed->message->from_name."\n\n";
+                        foreach ($replies as $sect => $data) {
+                            $body .= mb_strtoupper($sect)."\n";
+                            $body .= "----------------------------\n";
+                            $body .= implode("\n",$data)."\n\n";
+                        }
+                        $packet = new IfmailPacket($this->ftnconfig);
+                        $packet->setFrom($this->ftnconfig->areafix_robot_names[0], $this->ftnconfig->node_rfc);
+                        $packet->setTo($parsed->message->from_name, $parsed->message->from_ifaddr);
+                        $packet->setSubject("Areafix reply");
+                        $packet->setBody($body);
+
+                        if ($msg = $packet->getPacket()) {
+                            if (!$mf = fopen($this->ftnconfig->netmail_spool."/af_".substr(md5(time()),0,8).".msg","w+")) {
+                                $this->logger->warning("{time} netmail Cannot create message file in spool",['time'=>date('r')]);
+                            }
+                            fwrite($mf,$msg,strlen($msg));
+                            fclose($mf);
+                        }
+
+                        $this->logger->info("{time} areafix reply sent to {to}",['time'=>date('r'),'to'=>$parsed->message->from_ftn]);
+                    }
+
+                    if (isset($replies['subscribe']) || isset($replies['unsubscribe'])) {
+                        /*
+                        $this->getApplication()->add(new SyncSubscrCommand(null,$this->ftnconfig,$this->logger));
+                        $sync_subscr = $this->getApplication()->find("sync:subscr");
+                        $sync_subscr->run(new ArrayInput(['command'=>'sync:subscr']),$output);
+                        */
+                    }
+
+                // SYSOP
+                } else {
+                    $i=0;
+                    foreach ($this->ftnconfig->route['sysop'] as $dest) {
+                        $redirect = str_replace('@'.$parsed->message->to_ifaddr,'@'.$dest,$parsed->message->srcFull);
+                        $packet = new StreamOutput(fopen($this->ftnconfig->netmail_spool."/".$parsed->message->ftnMSGID.$i.".msg","w+"));
+                        $packet->writeln($redirect);
+                        $packet->writeln("");
+                        $i++;
+                    }
+
                 }
 
             /*
@@ -101,9 +156,9 @@ class MailtossCommand extends Command
                         $packet->getPacket()
                     );
                     $ifmail->run();
-                    $this->logger->info("@{time} netmail error return to {to}",['time'=>date('r'),'to'=>$packet->getTo()]);
+                    $this->logger->info("{time} netmail error return to {to}",['time'=>date('r'),'to'=>$packet->getTo()]);
                 } else {
-                    $this->logger->info("@{time} netmail no return because of possible loop",['time'=>date('r')]);
+                    $this->logger->info("{time} netmail no return because of possible loop",['time'=>date('r')]);
                 }
             /*
              * FOR NOT MY POINT - SEND TO UPLINK
@@ -119,7 +174,7 @@ class MailtossCommand extends Command
             unlink($mfile->getPathname());
             $parsed_count++;
         }
-        $this->logger->info("@{time} netmail tossed: {cnt}",['time'=>date('r'),'cnt'=>$parsed_count]);
+        $this->logger->info("{time} netmail tossed: {cnt}",['time'=>date('r'),'cnt'=>$parsed_count]);
 
     }
 
@@ -131,7 +186,7 @@ class MailtossCommand extends Command
             $parsed->message->srcFull
         );
         $ifmail->run();
-        $this->logger->info("@{time} netmail for {to}",['time'=>date('r'),'to'=>$parsed->message->to_ftn]);
+        $this->logger->info("{time} netmail for {to} sent to ifmail",['time'=>date('r'),'to'=>$parsed->message->to_rfc]);
     }
     private function saveToDB ($parsed) {
         // Check point db ID
@@ -189,7 +244,7 @@ class MailtossCommand extends Command
             $query->bindValue("m_mid", $parsed->message->messageid);
             try {
                 $query->execute();
-                $this->logger->info("@{time} Netmail from {fr} to {to} sent to DB", ['time'=>date('r'),'fr'=>$parsed->message->from_rfc,'to'=>$parsed->message->to_rfc]);
+                //$this->logger->info("@{time} Netmail from {fr} to {to} sent to DB", ['time'=>date('r'),'fr'=>$parsed->message->from_rfc,'to'=>$parsed->message->to_rfc]);
             } catch (UniqueConstraintViolationException $e) {
                 $this->logger->info("@{time} Not uniq message ID: {mid}", ['time'=>date('r'),'mid' => $parsed->message->messageid]);
             }

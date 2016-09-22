@@ -1,6 +1,8 @@
 # phpstorm
 /.idea
 
+._*
+
 # vendors' software
 /vendor/
 

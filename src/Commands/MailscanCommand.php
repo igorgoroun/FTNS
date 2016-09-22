@@ -46,6 +46,7 @@ class MailscanCommand extends Command
         $unbatched = $dbm->fetchAll();
         $spooled_count = 0;
         foreach($unbatched as $mess) {
+            $this->logger->info("{time} netmail batch from {from}",['time'=>date('r'),'from'=>$mess['h_from_rfc']]);
             $packet = new StreamOutput(fopen($this->ftnconfig->netmail_spool."/".$mess['h_ftnmid'].".msg","w+"));
             $packet->writeln("To: ".$mess["h_to"]." <".$mess['h_to_rfc'].">");
             $packet->writeln("From: ".$mess["h_from"]." <".$mess['h_from_rfc'].">");
@@ -54,7 +55,7 @@ class MailscanCommand extends Command
             $packet->writeln("Message-ID: ".$mess['message_id']);
             $packet->writeln("X-FTN-CHRS: CP866");
             $packet->writeln("Mime-Version: 1.0");
-            $packet->writeln("Content-Type: text/plain; charset=cp866");
+            $packet->writeln("Content-Type: text/plain; charset=x-cp866");
             $packet->writeln("Content-Transfer-Encoding: 8bit");
             $packet->writeln("X-FTN-MSGID: ".$mess['h_from_ftn']." ".$mess['h_ftnmid']);
 
@@ -79,7 +80,7 @@ class MailscanCommand extends Command
 
         // $this->ftnconfig->echomail_spool
 
-        $this->logger->info("@{time} scanned and spooled: {cnt}",['time'=>date('r'),'cnt'=>$spooled_count]);
+        $this->logger->info("{time} netmail spooled: {cnt}",['time'=>date('r'),'cnt'=>$spooled_count]);
 
     }
 }
