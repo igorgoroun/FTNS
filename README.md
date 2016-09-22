@@ -58,20 +58,29 @@ FTNS_PATH=“/opt/ftns/ftns"
 ```
 #### Echomail
 <code>./ftns echomail:spool</code> - принимает на STDIN сообщение от ifnews и складывает в echomail_spool.
+
 <code>./ftns echomail:toss</code> - тоссит сообщения в echomail_spool и раскладыает их поинтам.
+
 <code>./ftns echomail:scan</code> - смотрит новые сообщения в БД и складывает их для тоссера в echomail_spool.
+
 <code>./ftns echomail:subscribe Point_IFAddr Area1 Area2 …</code> - Подписывает поинта на эхи. Point_IFAddr в формате *p34.f4.n466.z2.fidonet.org*.
+
 <code>./ftns echomail:newarea Uplink_IFAddr Area1 Area2 …</code> - Подписаться у аплинка на эху и внести её в конфиг. Uplink_IFAddr в формате *f55.n466.z2.fidonet.org*.
+
 <code>./ftns echomail:post -s “Subject” -m “Message” -t “Tearline” -o “Origin” ECHOAREA</code> - Отправить сообщение в эху
 
 #### Netmail
 <code>./ftns netmail:spool -f From_RFC -t To_RFC </code> - принимает от ifmail на STDIN сообщения и складывает их в netmail_spool
+
 <code>./ftns netmail:toss</code> - тоссит сообщения в netmail_spool и раскладыает их поинтам.
+
 <code>./ftns netmail:scan</code> - смотрит новые нетмейл-сообщения в БД и складывает их для тоссера в netmail_spool.
 
 #### Sync
 <code>./ftns sync:points</code> - Синхронизирует поинтов в ftns с конфиг-файлом ftns.
+
 <code>./ftns sync:subscr</code> - Синхронизирует подписки поинтов между ftns и ftnw.
+
 <code>./ftns sync:areas</code> - Синхронизирует список доступных эх между ftns и ftnw.
 
 ## Настройки ifmail

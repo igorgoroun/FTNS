@@ -30,11 +30,13 @@
             "cp etc/ftns.yml.default etc/ftns.yml",
             "cp etc/areas.yml.default etc/areas.yml",
             "cp etc/points.yml.default etc/points.yml",
+            "mv README.md ../../../",
             "mv ftns-toss ../../../",
             "mv etc ../../../"
         ],
         "post-update-cmd": [
             "chmod a+x ftns",
+            "mv --force README.md ../../../",
             "mv --force ftns ../../../"
         ]
     },
