@@ -43,6 +43,7 @@ class EchoNewCommand extends Command
         $area_file_changed = false;
         $areas_to_subscribe = array();
         foreach($input->getArgument('echo') as $newarea) {
+            $newarea = mb_strtolower($newarea);
             if (array_key_exists($newarea, $local_areas['areas']) && !$input->getOption('resubscribe')) {
                 $output->writeln(
                     "Area ".$newarea." already exists, linked from ".$local_areas['areas'][$newarea]['uplink']

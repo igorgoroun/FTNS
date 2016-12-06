@@ -56,6 +56,7 @@ class SyncAreasCommand extends Command
                 $stmt = $this->db->prepare($sql);
                 $stmt->bindValue("aname",$area_name);
                 $stmt->execute();
+                $this->logger->notice("Area {$area_name} created in DB");
             }
         }
     }

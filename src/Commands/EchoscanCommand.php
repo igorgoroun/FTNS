@@ -49,7 +49,7 @@ class EchoscanCommand extends Command
             $packet = new StreamOutput(fopen($this->ftnconfig->echomail_spool."/".$mess['h_ftnmid'].".msg","w+"));
             $packet->writeln("Path: ".$this->ftnconfig->node_rfc."!not-for-mail");
             $packet->writeln("Newsgroups: ".$mess['area']);
-            $packet->writeln("X-Comment-To: ".$mess["h_to"]);
+            $packet->writeln("X-Comment-To: ".iconv("UTF-8","CP866",$mess["h_to"]));
             $packet->writeln("From: ".$mess["h_from"]." <".str_replace([" ","_"],".",$mess['h_from'])."@".$mess['h_from_rfc'].">");
             $packet->writeln("Date: ".(new \DateTime($mess["h_date"]))->format('r'));
             $packet->writeln("Subject: ".iconv("UTF-8","CP866",$mess['subject']));

@@ -48,11 +48,17 @@ class Message
     public static function makeRFC($name=false,$ftn) {
         if (preg_match("/^(\d{1})\:(\d{1,4})\/(\d{1,4})\.(\d{1,4})/",$ftn,$data)) {
             $addr = "p".$data[4].".f".$data[3].".n".$data[2].".z".$data[1].".fidonet.org";
-            return $addr;
+            //return $addr;
         } elseif (preg_match("/^(\d{1})\:(\d{1,4})\/(\d{1,4})/",$ftn,$data)) {
             $addr = "f".$data[3].".n".$data[2].".z".$data[1].".fidonet.org";
-            return $addr;
+            //return $addr;
         } else return false;
+        if ($name) {
+            $rfc_name = str_replace(['_',' ',"'","\""],['.','.','',''],$name);
+            return $rfc_name."@".$addr;
+        } else {
+            return $addr;
+        }
 
     }
     public static function makeFTN($rfc) {

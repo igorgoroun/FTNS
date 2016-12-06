@@ -76,6 +76,7 @@ class EchotossCommand extends Command
                     h_from_ftn=:m_fromftn,
                     h_to=:m_to,
                     h_to_ftn=:m_toftn,
+                    h_to_rfc=:m_torfc,
                     h_ftnmid=:m_ftnmid,
                     h_ftnreply=:m_ftnreply,
                     h_date=:m_date,
@@ -98,6 +99,7 @@ class EchotossCommand extends Command
                     $query->bindValue("m_fromftn", $parsed->message->from_ftn);
                     $query->bindValue("m_to", $parsed->message->to_name);
                     $query->bindValue("m_toftn", $parsed->message->to_ftn);
+                    $query->bindValue("m_torfc", $parsed->message->to_rfc);
                     $query->bindValue("m_ftnmid", $parsed->message->ftnMSGID);
                     $query->bindValue("m_ftnreply", $parsed->message->ftnREPLY);
                     $query->bindValue("m_date", $parsed->message->date);

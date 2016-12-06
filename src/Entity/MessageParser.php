@@ -82,6 +82,9 @@ class MessageParser
                     case "from":
                         $this->parseFromNameRFC($data);
                         break;
+                    case "x-ftn-sender":
+                        $this->parseFromNameRFC($data);
+                        break;
                     case "to":
                         $this->parseToRFC($data);
                         break;
@@ -151,21 +154,29 @@ class MessageParser
     }
     private function parseToFTN($data) {
         list($this->message->to_ftn,$this->message->ftnREPLY) = explode(" ",$data);
+        if ($this->message->ftnREPLY) {
+            $this->message->to_rfc = $this->message->makeRFC($this->message->to_name,$this->message->to_ftn);
+        }
     }
     private function parseToRFC($data) {
-        preg_match("/^(.+)\ \<(.+)\>$/", $data, $todata);
-        $this->message->to_name = $todata[1];
-        $this->message->to_rfc = $todata[2];
-        list($rfname,$this->message->to_ifaddr) = explode("@",$this->message->to_rfc);
-        if ($toftn = $this->message->makeFTN($this->message->to_rfc)) {
-            $this->message->to_ftn = $toftn;
+        if(preg_match("/^(.+)\ \<(.+)\>$/", $data, $todata)) {
+            $this->message->to_name = $todata[1];
+            $this->message->to_rfc = $todata[2];
+            list($rfname,$this->message->to_ifaddr) = explode("@",$this->message->to_rfc);
+            if ($toftn = $this->message->makeFTN($this->message->to_rfc)) {
+                $this->message->to_ftn = $toftn;
+            }
         }
     }
     private function parseFromNameRFC($data) {
-        preg_match("/^(.+)\ \<(.+)\>$/", $data, $fromdata);
-        $this->message->from_name = $fromdata[1];
-        $this->message->from_rfc = $fromdata[2];
-        list($rfname,$this->message->from_ifaddr) = explode("@",$this->message->from_rfc);
+        if (preg_match("/^(.+)\ \<(.+)\>$/", $data, $fromdata)) {
+          $this->message->from_name = $fromdata[1];
+          $this->message->from_rfc = $fromdata[2];
+          list($rfname,$this->message->from_ifaddr) = explode("@",$this->message->from_rfc);
+        } else {
+          $this->message->from_name = $data;
+          $this->message->from_rfc = "";
+        }
     }
     private function parseFromFTN($data) {
         list($this->message->from_ftn,$this->message->ftnMSGID) = explode(" ",$data);

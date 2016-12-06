@@ -36,6 +36,7 @@ $app->add(new \Commands\SyncPointsCommand(null,$config,$logger));
 $app->add(new \Commands\SyncAreasCommand(null,$config,$logger));
 $app->add(new \Commands\SyncSubscrCommand(null,$config,$logger));
 $app->add(new \Commands\EchoSubCommand(null,$config,$logger));
+$app->add(new \Commands\StatDailyCommand(null,$config,$logger));
 $app->run();
 
 ?>

@@ -17,7 +17,7 @@ class Areafix
 {
     private $ftnconfig;
     private $logger;
-    private $requests=array('help','list');
+    private $requests=array('help','list','HELP','LIST');
     private $commands=array('+','-');
     private $to_subscr=array();
     private $to_unsub=array();
@@ -39,13 +39,13 @@ class Areafix
             if (preg_match("/^\%(.+)$/",$str,$data)) {
                 $this->logger->info("{time} areafix request {req} from {sender}",['time'=>date('r'),'req'=>$data[1],'sender'=>$message->from_ftn]);
                 if (in_array(trim($data[1]),$this->requests)) {
-                    $this->doRequest(trim($data[1]),$message->from_ifaddr);
+                    $this->doRequest(mb_strtolower(trim($data[1])),$message->from_ifaddr);
                 }
             }
             if (preg_match("/^(\-|\+)(.+)$/",$str,$data)) {
                 $this->logger->info("{time} areafix command {com_type} {com_text} from {sender}",['time'=>date('r'),'com_type'=>$data[1],'com_text'=>$data[2],'sender'=>$message->from_ftn]);
                 if (in_array(trim($data[1]),$this->commands)) {
-                    $this->doCommand(trim($data[1]),trim($data[2]),$message->from_ifaddr);
+                    $this->doCommand(trim($data[1]),mb_strtolower(trim($data[2])),$message->from_ifaddr);
                 }
             }
         }
