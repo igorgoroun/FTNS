@@ -66,7 +66,7 @@ class MailscanCommand extends Command
             $packet->writeln("X-FTN-PID: ".iconv("UTF-8","CP866",$mess["pid"]));
             $packet->writeln("X-FTN-TZUTC: ".(new \DateTime($mess["h_date"]))->format('O'));
             $packet->writeln("X-FTN-Tearline: ".iconv("UTF-8","CP866",$mess['tearline']));
-            $packet->writeln("X-FTN-Origin: ".iconv("UTF-8","CP866",$mess['origin']));
+            $packet->writeln("X-FTN-Origin: ".iconv("UTF-8","CP866",$mess['origin'])." (".$mess['h_from_ftn'].")");
             $packet->writeln("");
             $packet->writeln(iconv("UTF-8","CP866",$mess['body']));
             $packet->writeln("");
